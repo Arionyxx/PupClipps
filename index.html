@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VideoFeed - Main Feed</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            overflow-x: hidden;
+            background: #000;
+        }
+        
+        .video-container {
+            height: 100vh;
+            scroll-snap-align: start;
+            position: relative;
+        }
+        
+        .video-feed {
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .video-feed::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(transparent 60%, rgba(0,0,0,0.3));
+            pointer-events: none;
+        }
+        
+        .video-controls {
+            position: absolute;
+            right: 1rem;
+            bottom: 6rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            pointer-events: auto;
+        }
+        
+        .video-info {
+            position: absolute;
+            left: 1rem;
+            bottom: 6rem;
+            right: 5rem;
+            pointer-events: auto;
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+        }
+        
+        .control-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .control-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+        
+        .like-btn.liked {
+            color: #ff0050;
+        }
+        
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .video-controls {
+                right: 0.5rem;
+                bottom: 5rem;
+            }
+            
+            .video-info {
+                left: 0.5rem;
+                right: 4rem;
+                bottom: 5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Video Feed -->
+    <main class="video-feed" id="videoFeed" role="main" aria-label="Video feed">
+        <!-- Video 1 -->
+        <article class="video-container" data-video-id="1">
+            <div class="video-placeholder">
+                <div class="text-center">
+                    <i class="fas fa-play text-6xl mb-4"></i>
+                    <p>Sample Video 1</p>
+                </div>
+            </div>
+            <div class="video-overlay"></div>
+            
+            <div class="video-info text-white">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="avatar">
+                        <div class="w-10 rounded-full">
+                            <img src="https://via.placeholder.com/40x40/ff6b6b/ffffff?text=U1" alt="User avatar" />
+                        </div>
+                    </div>
+                    <span class="font-semibold">@user1</span>
+                    <button class="btn btn-outline btn-sm text-white border-white hover:bg-white hover:text-black">
+                        Follow
+                    </button>
+                </div>
+                <p class="text-sm mb-2">Amazing sunset timelapse! 🌅 #sunset #nature #timelapse</p>
+                <div class="flex items-center gap-4 text-sm">
+                    <span><i class="fas fa-music mr-1"></i>Original Audio</span>
+                </div>
+            </div>
+            
+            <div class="video-controls">
+                <button class="control-btn like-btn" onclick="toggleLike(this)" aria-label="Like video">
+                    <i class="fas fa-heart"></i>
+                </button>
+                <span class="text-white text-xs text-center">1.2K</span>
+                
+                <button class="control-btn" onclick="toggleComments()" aria-label="View comments">
+                    <i class="fas fa-comment"></i>
+                </button>
+                <span class="text-white text-xs text-center">89</span>
+                
+                <button class="control-btn" onclick="shareVideo()" aria-label="Share video">
+                    <i class="fas fa-share"></i>
+                </button>
+                <span class="text-white text-xs text-center">Share</span>
+            </div>
+        </article>
+
+        <!-- Video 2 -->
+        <article class="video-container" data-video-id="2">
+            <div class="video-placeholder" style="background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);">
+                <div class="text-center">
+                    <i class="fas fa-play text-6xl mb-4"></i>
+                    <p>Sample Video 2</p>
+                </div>
+            </div>
+            <div class="video-overlay"></div>
+            
+            <div class="video-info text-white">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="avatar">
+                        <div class="w-10 rounded-full">
+                            <img src="https://via.placeholder.com/40x40/4ecdc4/ffffff?text=U2" alt="User avatar" />
+                        </div>
+                    </div>
+                    <span class="font-semibold">@creator2</span>
+                    <button class="btn btn-outline btn-sm text-white border-white hover:bg-white hover:text-black">
+                        Follow
+                    </button>
+                </div>
+                <p class="text-sm mb-2">Dancing to my favorite song! 💃 #dance #music #viral</p>
+                <div class="flex items-center gap-4 text-sm">
+                    <span><i class="fas fa-music mr-1"></i>Trending Song</span>
+                </div>
+            </div>
+            
+            <div class="video-controls">
+                <button class="control-btn like-btn" onclick="toggleLike(this)" aria-label="Like video">
+                    <i class="fas fa-heart"></i>
+                </button>
+                <span class="text-white text-xs text-center">3.4K</span>
+                
+                <button class="control-btn" onclick="toggleComments()" aria-label="View comments">
+                    <i class="fas fa-comment"></i>
+                </button>
+                <span class="text-white text-xs text-center">156</span>
+                
+                <button class="control-btn" onclick="shareVideo()" aria-label="Share video">
+                    <i class="fas fa-share"></i>
+                </button>
+                <span class="text-white text-xs text-center">Share</span>
+            </div>
+        </article>
+
+        <!-- Video 3 -->
+        <article class="video-container" data-video-id="3">
+            <div class="video-placeholder" style="background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="text-center">
+                    <i class="fas fa-play text-6xl mb-4"></i>
+                    <p>Sample Video 3</p>
+                </div>
+            </div>
+            <div class="video-overlay"></div>
+            
+            <div class="video-info text-white">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="avatar">
+                        <div class="w-10 rounded-full">
+                            <img src="https://via.placeholder.com/40x40/45b7d1/ffffff?text=U3" alt="User avatar" />
+                        </div>
+                    </div>
+                    <span class="font-semibold">@foodie3</span>
+                    <button class="btn btn-outline btn-sm text-white border-white hover:bg-white hover:text-black">
+                        Follow
+                    </button>
+                </div>
+                <p class="text-sm mb-2">Quick pasta recipe! 🍝 #cooking #food #recipe</p>
+                <div class="flex items-center gap-4 text-sm">
+                    <span><i class="fas fa-music mr-1"></i>Cooking Beats</span>
+                </div>
+            </div>
+            
+            <div class="video-controls">
+                <button class="control-btn like-btn" onclick="toggleLike(this)" aria-label="Like video">
+                    <i class="fas fa-heart"></i>
+                </button>
+                <span class="text-white text-xs text-center">892</span>
+                
+                <button class="control-btn" onclick="toggleComments()" aria-label="View comments">
+                    <i class="fas fa-comment"></i>
+                </button>
+                <span class="text-white text-xs text-center">45</span>
+                
+                <button class="control-btn" onclick="shareVideo()" aria-label="Share video">
+                    <i class="fas fa-share"></i>
+                </button>
+                <span class="text-white text-xs text-center">Share</span>
+            </div>
+        </article>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+        <div class="navbar px-4 py-2">
+            <div class="navbar-start">
+                <a href="index.html" class="btn btn-ghost text-white">
+                    <i class="fas fa-home text-xl"></i>
+                </a>
+            </div>
+            <div class="navbar-center">
+                <a href="upload.html" class="btn btn-ghost text-white">
+                    <i class="fas fa-plus text-xl"></i>
+                </a>
+            </div>
+            <div class="navbar-end">
+                <a href="profile.html" class="btn btn-ghost text-white">
+                    <i class="fas fa-user text-xl"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Comments Modal -->
+    <div class="modal" id="commentsModal">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg mb-4">Comments</h3>
+            <div class="space-y-4 max-h-96 overflow-y-auto">
+                <div class="flex gap-3">
+                    <div class="avatar">
+                        <div class="w-8 rounded-full">
+                            <img src="https://via.placeholder.com/32x32/96ceb4/ffffff?text=C1" alt="Commenter avatar" />
+                        </div>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-sm">@commenter1</p>
+                        <p class="text-sm">Amazing video! Love it! 😍</p>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <div class="avatar">
+                        <div class="w-8 rounded-full">
+                            <img src="https://via.placeholder.com/32x32/ffeaa7/ffffff?text=C2" alt="Commenter avatar" />
+                        </div>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-sm">@commenter2</p>
+                        <p class="text-sm">How did you make this?</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-action">
+                <button class="btn" onclick="toggleComments()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Like functionality
+        function toggleLike(button) {
+            button.classList.toggle('liked');
+            const icon = button.querySelector('i');
+            if (button.classList.contains('liked')) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+            }
+        }
+
+        // Comments modal
+        function toggleComments() {
+            const modal = document.getElementById('commentsModal');
+            modal.classList.toggle('modal-open');
+        }
+
+        // Share functionality
+        function shareVideo() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Check out this video!',
+                    text: 'Amazing video on VideoFeed',
+                    url: window.location.href
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('Link copied to clipboard!');
+                });
+            }
+        }
+
+        // Smooth scrolling with snap
+        document.addEventListener('DOMContentLoaded', function() {
+            const videoFeed = document.getElementById('videoFeed');
+            let isScrolling = false;
+
+            videoFeed.addEventListener('scroll', function() {
+                if (!isScrolling) {
+                    window.requestAnimationFrame(function() {
+                        // Add any scroll-based animations here
+                        isScrolling = false;
+                    });
+                    isScrolling = true;
+                }
+            });
+
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    const currentScroll = videoFeed.scrollTop;
+                    const windowHeight = window.innerHeight;
+                    videoFeed.scrollTo({
+                        top: currentScroll + windowHeight,
+                        behavior: 'smooth'
+                    });
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    const currentScroll = videoFeed.scrollTop;
+                    const windowHeight = window.innerHeight;
+                    videoFeed.scrollTo({
+                        top: currentScroll - windowHeight,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('commentsModal');
+            if (e.target === modal) {
+                modal.classList.remove('modal-open');
+            }
+        });
+    </script>
+</body>
+</html>
