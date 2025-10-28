@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VideoShare - Discover Amazing Videos</title>
+    <title>VideoFeed - Discover Amazing Videos</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,9 +14,7 @@
         }
         
         .video-container {
-            height: 100vh;
             scroll-snap-type: y mandatory;
-            overflow-y: scroll;
             scrollbar-width: none;
             -ms-overflow-style: none;
         }
@@ -26,389 +24,379 @@
         }
         
         .video-item {
-            height: 100vh;
             scroll-snap-align: start;
-            position: relative;
         }
         
         .video-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(transparent 60%, rgba(0,0,0,0.7));
-            z-index: 10;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+        }
+        
+        .floating-nav {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        @media (max-width: 768px) {
+            .video-item {
+                height: 100vh;
+            }
+        }
+        
+        .like-animation {
+            animation: likeScale 0.3s ease-in-out;
+        }
+        
+        @keyframes likeScale {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
         }
         
         .video-actions {
-            position: absolute;
             right: 1rem;
-            bottom: 8rem;
-            z-index: 20;
-        }
-        
-        .video-info {
-            position: absolute;
-            left: 1rem;
-            bottom: 8rem;
-            right: 5rem;
-            z-index: 20;
-            color: white;
-        }
-        
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 30;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-        }
-        
-        .action-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 1rem;
-            color: white;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-        }
-        
-        .video-bg {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .mock-video {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4rem;
-            color: white;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            top: 50%;
+            transform: translateY(-50%);
         }
     </style>
 </head>
-<body>
-    <main class="video-container" id="videoContainer">
-        <!-- Video Item 1 -->
-        <article class="video-item">
-            <div class="video-bg" style="background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);">
-                <div class="mock-video">
-                    <i class="fas fa-play-circle"></i>
-                </div>
-            </div>
-            <div class="video-overlay"></div>
-            
-            <section class="video-info">
-                <div class="flex items-center mb-2">
-                    <div class="avatar">
-                        <div class="w-10 rounded-full">
-                            <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">
-                                JD
-                            </div>
-                        </div>
-                    </div>
-                    <span class="ml-3 font-semibold">@johndoe</span>
-                    <button class="btn btn-outline btn-sm ml-3 text-white border-white hover:bg-white hover:text-black">
-                        Follow
-                    </button>
-                </div>
-                <p class="text-sm mb-2">Amazing sunset timelapse from my rooftop! 🌅 #sunset #timelapse #photography</p>
-                <div class="flex items-center text-xs opacity-80">
-                    <i class="fas fa-music mr-2"></i>
-                    <span>Original Audio - John Doe</span>
-                </div>
-            </section>
-            
-            <aside class="video-actions">
-                <button class="action-btn" onclick="toggleLike(this)">
-                    <i class="fas fa-heart text-2xl mb-1"></i>
-                    <span class="text-xs">1.2K</span>
-                </button>
-                <button class="action-btn" onclick="openComments()">
-                    <i class="fas fa-comment text-2xl mb-1"></i>
-                    <span class="text-xs">89</span>
-                </button>
-                <button class="action-btn" onclick="shareVideo()">
-                    <i class="fas fa-share text-2xl mb-1"></i>
-                    <span class="text-xs">Share</span>
-                </button>
-                <button class="action-btn">
-                    <i class="fas fa-bookmark text-2xl mb-1"></i>
-                </button>
-            </aside>
-        </article>
-
-        <!-- Video Item 2 -->
-        <article class="video-item">
-            <div class="video-bg" style="background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);">
-                <div class="mock-video">
-                    <i class="fas fa-play-circle"></i>
-                </div>
-            </div>
-            <div class="video-overlay"></div>
-            
-            <section class="video-info">
-                <div class="flex items-center mb-2">
-                    <div class="avatar">
-                        <div class="w-10 rounded-full">
-                            <div class="w-10 h-10 bg-secondary rounded-full flex items-center justify-center text-white font-bold">
-                                SA
-                            </div>
-                        </div>
-                    </div>
-                    <span class="ml-3 font-semibold">@sarahartist</span>
-                    <button class="btn btn-outline btn-sm ml-3 text-white border-white hover:bg-white hover:text-black">
-                        Follow
-                    </button>
-                </div>
-                <p class="text-sm mb-2">Quick painting tutorial - How to paint clouds ☁️ #art #painting #tutorial #clouds</p>
-                <div class="flex items-center text-xs opacity-80">
-                    <i class="fas fa-music mr-2"></i>
-                    <span>Chill Beats - Lofi Hip Hop</span>
-                </div>
-            </section>
-            
-            <aside class="video-actions">
-                <button class="action-btn" onclick="toggleLike(this)">
-                    <i class="fas fa-heart text-2xl mb-1"></i>
-                    <span class="text-xs">3.4K</span>
-                </button>
-                <button class="action-btn" onclick="openComments()">
-                    <i class="fas fa-comment text-2xl mb-1"></i>
-                    <span class="text-xs">156</span>
-                </button>
-                <button class="action-btn" onclick="shareVideo()">
-                    <i class="fas fa-share text-2xl mb-1"></i>
-                    <span class="text-xs">Share</span>
-                </button>
-                <button class="action-btn">
-                    <i class="fas fa-bookmark text-2xl mb-1"></i>
-                </button>
-            </aside>
-        </article>
-
-        <!-- Video Item 3 -->
-        <article class="video-item">
-            <div class="video-bg" style="background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);">
-                <div class="mock-video">
-                    <i class="fas fa-play-circle"></i>
-                </div>
-            </div>
-            <div class="video-overlay"></div>
-            
-            <section class="video-info">
-                <div class="flex items-center mb-2">
-                    <div class="avatar">
-                        <div class="w-10 rounded-full">
-                            <div class="w-10 h-10 bg-accent rounded-full flex items-center justify-center text-white font-bold">
-                                MC
-                            </div>
-                        </div>
-                    </div>
-                    <span class="ml-3 font-semibold">@mikechef</span>
-                    <button class="btn btn-outline btn-sm ml-3 text-white border-white hover:bg-white hover:text-black">
-                        Follow
-                    </button>
-                </div>
-                <p class="text-sm mb-2">30-second pasta recipe that will blow your mind! 🍝 #cooking #pasta #recipe #foodhack</p>
-                <div class="flex items-center text-xs opacity-80">
-                    <i class="fas fa-music mr-2"></i>
-                    <span>Upbeat Cooking Music</span>
-                </div>
-            </section>
-            
-            <aside class="video-actions">
-                <button class="action-btn" onclick="toggleLike(this)">
-                    <i class="fas fa-heart text-2xl mb-1"></i>
-                    <span class="text-xs">5.7K</span>
-                </button>
-                <button class="action-btn" onclick="openComments()">
-                    <i class="fas fa-comment text-2xl mb-1"></i>
-                    <span class="text-xs">234</span>
-                </button>
-                <button class="action-btn" onclick="shareVideo()">
-                    <i class="fas fa-share text-2xl mb-1"></i>
-                    <span class="text-xs">Share</span>
-                </button>
-                <button class="action-btn">
-                    <i class="fas fa-bookmark text-2xl mb-1"></i>
-                </button>
-            </aside>
-        </article>
-    </main>
-
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
-        <div class="btm-nav">
-            <a href="index.html" class="active">
-                <i class="fas fa-home text-lg"></i>
-                <span class="btm-nav-label">Home</span>
-            </a>
-            <a href="#" onclick="openDiscover()">
+<body class="bg-base-100">
+    <!-- Navigation -->
+    <nav class="navbar floating-nav fixed top-0 z-50 px-4">
+        <div class="navbar-start">
+            <h1 class="text-2xl font-bold text-primary">VideoFeed</h1>
+        </div>
+        <div class="navbar-center hidden lg:flex">
+            <ul class="menu menu-horizontal px-1">
+                <li><a href="#" class="btn btn-ghost">For You</a></li>
+                <li><a href="#" class="btn btn-ghost">Following</a></li>
+                <li><a href="#" class="btn btn-ghost">Live</a></li>
+            </ul>
+        </div>
+        <div class="navbar-end">
+            <button class="btn btn-ghost btn-circle" aria-label="Search">
                 <i class="fas fa-search text-lg"></i>
-                <span class="btm-nav-label">Discover</span>
+            </button>
+            <a href="upload.html" class="btn btn-primary btn-sm ml-2">
+                <i class="fas fa-plus mr-1"></i>Upload
             </a>
-            <a href="upload.html" class="text-primary">
-                <i class="fas fa-plus-circle text-2xl"></i>
-            </a>
-            <a href="#" onclick="openInbox()">
-                <i class="fas fa-inbox text-lg"></i>
-                <span class="btm-nav-label">Inbox</span>
-            </a>
-            <a href="profile.html">
-                <i class="fas fa-user text-lg"></i>
-                <span class="btm-nav-label">Profile</span>
+            <a href="profile.html" class="btn btn-ghost btn-circle ml-2" aria-label="Profile">
+                <div class="avatar">
+                    <div class="w-8 rounded-full">
+                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=face" alt="User avatar" />
+                    </div>
+                </div>
             </a>
         </div>
     </nav>
 
-    <!-- Comments Modal -->
-    <dialog id="commentsModal" class="modal">
-        <div class="modal-box w-11/12 max-w-2xl">
-            <form method="dialog">
-                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-            </form>
-            <h3 class="font-bold text-lg mb-4">Comments</h3>
+    <!-- Video Feed Container -->
+    <main class="video-container h-screen overflow-y-scroll pt-16 lg:pt-0">
+        <!-- Video Item 1 -->
+        <article class="video-item relative h-screen lg:h-[80vh] bg-black flex items-center justify-center">
+            <video 
+                class="w-full h-full object-cover" 
+                loop 
+                muted 
+                playsinline
+                data-video-id="1"
+                poster="https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=600&fit=crop"
+            >
+                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
             
-            <div class="space-y-4 max-h-96 overflow-y-auto mb-4">
-                <div class="flex space-x-3">
+            <!-- Video Overlay -->
+            <div class="video-overlay absolute inset-0 pointer-events-none"></div>
+            
+            <!-- Video Info -->
+            <div class="absolute bottom-4 left-4 text-white z-10 max-w-xs lg:max-w-md">
+                <div class="flex items-center mb-2">
                     <div class="avatar">
-                        <div class="w-8 rounded-full">
-                            <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-xs font-bold">
-                                AB
-                            </div>
+                        <div class="w-10 rounded-full ring ring-white ring-offset-2">
+                            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face" alt="Creator avatar" />
                         </div>
                     </div>
-                    <div class="flex-1">
-                        <div class="flex items-center space-x-2">
-                            <span class="font-semibold text-sm">@alexbrown</span>
-                            <span class="text-xs opacity-60">2h</span>
-                        </div>
-                        <p class="text-sm">This is amazing! How did you get that perfect timing?</p>
-                        <div class="flex items-center space-x-4 mt-1">
-                            <button class="text-xs opacity-60 hover:opacity-100">Reply</button>
-                            <button class="text-xs opacity-60 hover:opacity-100">
-                                <i class="fas fa-heart mr-1"></i>12
-                            </button>
-                        </div>
+                    <div class="ml-3">
+                        <h3 class="font-semibold">@sarah_creates</h3>
+                        <button class="btn btn-primary btn-xs mt-1">Follow</button>
                     </div>
                 </div>
+                <p class="text-sm mb-2">Amazing sunset timelapse from my rooftop! 🌅 #sunset #timelapse #photography</p>
+                <div class="flex items-center text-xs opacity-75">
+                    <i class="fas fa-music mr-1"></i>
+                    <span>Original Sound - sarah_creates</span>
+                </div>
+            </div>
+            
+            <!-- Video Actions -->
+            <div class="video-actions absolute flex flex-col items-center space-y-4 z-10">
+                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" onclick="toggleLike(this)" aria-label="Like video">
+                    <i class="fas fa-heart text-2xl"></i>
+                </button>
+                <span class="text-white text-sm font-semibold">1.2K</span>
                 
-                <div class="flex space-x-3">
+                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" aria-label="Comment">
+                    <i class="fas fa-comment text-2xl"></i>
+                </button>
+                <span class="text-white text-sm font-semibold">89</span>
+                
+                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" aria-label="Share">
+                    <i class="fas fa-share text-2xl"></i>
+                </button>
+                <span class="text-white text-sm font-semibold">24</span>
+                
+                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" aria-label="More options">
+                    <i class="fas fa-ellipsis-v text-2xl"></i>
+                </button>
+            </div>
+        </article>
+
+        <!-- Video Item 2 -->
+        <article class="video-item relative h-screen lg:h-[80vh] bg-black flex items-center justify-center">
+            <video 
+                class="w-full h-full object-cover" 
+                loop 
+                muted 
+                playsinline
+                data-video-id="2"
+                poster="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=600&fit=crop"
+            >
+                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            
+            <div class="video-overlay absolute inset-0 pointer-events-none"></div>
+            
+            <div class="absolute bottom-4 left-4 text-white z-10 max-w-xs lg:max-w-md">
+                <div class="flex items-center mb-2">
                     <div class="avatar">
-                        <div class="w-8 rounded-full">
-                            <div class="w-8 h-8 bg-secondary rounded-full flex items-center justify-center text-white text-xs font-bold">
-                                LM
-                            </div>
+                        <div class="w-10 rounded-full ring ring-white ring-offset-2">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" alt="Creator avatar" />
                         </div>
                     </div>
-                    <div class="flex-1">
-                        <div class="flex items-center space-x-2">
-                            <span class="font-semibold text-sm">@lisamiller</span>
-                            <span class="text-xs opacity-60">1h</span>
-                        </div>
-                        <p class="text-sm">Beautiful work! Following for more content like this 🔥</p>
-                        <div class="flex items-center space-x-4 mt-1">
-                            <button class="text-xs opacity-60 hover:opacity-100">Reply</button>
-                            <button class="text-xs opacity-60 hover:opacity-100">
-                                <i class="fas fa-heart mr-1"></i>8
-                            </button>
-                        </div>
+                    <div class="ml-3">
+                        <h3 class="font-semibold">@mike_adventures</h3>
+                        <button class="btn btn-primary btn-xs mt-1">Follow</button>
                     </div>
+                </div>
+                <p class="text-sm mb-2">Epic mountain hiking adventure! The view was absolutely breathtaking 🏔️ #hiking #adventure #nature</p>
+                <div class="flex items-center text-xs opacity-75">
+                    <i class="fas fa-music mr-1"></i>
+                    <span>Adventure Vibes - Mike</span>
                 </div>
             </div>
             
-            <div class="flex space-x-2">
-                <input type="text" placeholder="Add a comment..." class="input input-bordered flex-1" />
-                <button class="btn btn-primary">Post</button>
+            <div class="video-actions absolute flex flex-col items-center space-y-4 z-10">
+                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" onclick="toggleLike(this)" aria-label="Like video">
+                    <i class="fas fa-heart text-2xl"></i>
+                </button>
+                <span class="text-white text-sm font-semibold">3.4K</span>
+                
+                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" aria-label="Comment">
+                    <i class="fas fa-comment text-2xl"></i>
+                </button>
+                <span class="text-white text-sm font-semibold">156</span>
+                
+                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" aria-label="Share">
+                    <i class="fas fa-share text-2xl"></i>
+                </button>
+                <span class="text-white text-sm font-semibold">67</span>
+                
+                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" aria-label="More options">
+                    <i class="fas fa-ellipsis-v text-2xl"></i>
+                </button>
             </div>
-        </div>
-        <form method="dialog" class="modal-backdrop">
-            <button>close</button>
-        </form>
-    </dialog>
+        </article>
+
+        <!-- Video Item 3 -->
+        <article class="video-item relative h-screen lg:h-[80vh] bg-black flex items-center justify-center">
+            <video 
+                class="w-full h-full object-cover" 
+                loop 
+                muted 
+                playsinline
+                data-video-id="3"
+                poster="https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=400&h=600&fit=crop"
+            >
+                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            
+            <div class="video-overlay absolute inset-0 pointer-events-none"></div>
+            
+            <div class="absolute bottom-4 left-4 text-white z-10 max-w-xs lg:max-w-md">
+                <div class="flex items-center mb-2">
+                    <div class="avatar">
+                        <div class="w-10 rounded-full ring ring-white ring-offset-2">
+                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face" alt="Creator avatar" />
+                        </div>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="font-semibold">@emma_dances</h3>
+                        <button class="btn btn-primary btn-xs mt-1">Follow</button>
+                    </div>
+                </div>
+                <p class="text-sm mb-2">New dance routine! Took me weeks to perfect this 💃 #dance #choreography #trending</p>
+                <div class="flex items-center text-xs opacity-75">
+                    <i class="fas fa-music mr-1"></i>
+                    <span>Trending Beat 2024</span>
+                </div>
+            </div>
+            
+            <div class="video-actions absolute flex flex-col items-center space-y-4 z-10">
+                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" onclick="toggleLike(this)" aria-label="Like video">
+                    <i class="fas fa-heart text-2xl"></i>
+                </button>
+                <span class="text-white text-sm font-semibold">5.7K</span>
+                
+                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" aria-label="Comment">
+                    <i class="fas fa-comment text-2xl"></i>
+                </button>
+                <span class="text-white text-sm font-semibold">234</span>
+                
+                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" aria-label="Share">
+                    <i class="fas fa-share text-2xl"></i>
+                </button>
+                <span class="text-white text-sm font-semibold">89</span>
+                
+                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" aria-label="More options">
+                    <i class="fas fa-ellipsis-v text-2xl"></i>
+                </button>
+            </div>
+        </article>
+    </main>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <nav class="btm-nav lg:hidden z-50">
+        <button class="active">
+            <i class="fas fa-home text-lg"></i>
+            <span class="btm-nav-label">Home</span>
+        </button>
+        <button>
+            <i class="fas fa-compass text-lg"></i>
+            <span class="btm-nav-label">Discover</span>
+        </button>
+        <a href="upload.html">
+            <i class="fas fa-plus text-lg"></i>
+            <span class="btm-nav-label">Create</span>
+        </a>
+        <button>
+            <i class="fas fa-heart text-lg"></i>
+            <span class="btm-nav-label">Inbox</span>
+        </button>
+        <a href="profile.html">
+            <i class="fas fa-user text-lg"></i>
+            <span class="btm-nav-label">Profile</span>
+        </a>
+    </nav>
 
     <script>
+        // Video playback management
+        let currentVideo = null;
+        const videos = document.querySelectorAll('video');
+        const videoContainer = document.querySelector('.video-container');
+        
+        // Intersection Observer for video playback
+        const videoObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const video = entry.target;
+                if (entry.isIntersecting) {
+                    if (currentVideo && currentVideo !== video) {
+                        currentVideo.pause();
+                    }
+                    video.play().catch(e => console.log('Video play failed:', e));
+                    currentVideo = video;
+                } else {
+                    video.pause();
+                }
+            });
+        }, {
+            threshold: 0.5
+        });
+        
+        // Observe all videos
+        videos.forEach(video => {
+            videoObserver.observe(video);
+            
+            // Click to play/pause
+            video.addEventListener('click', () => {
+                if (video.paused) {
+                    video.play();
+                } else {
+                    video.pause();
+                }
+            });
+        });
+        
+        // Like functionality
         function toggleLike(button) {
-            const heart = button.querySelector('i');
-            const count = button.querySelector('span');
+            const icon = button.querySelector('i');
+            const countSpan = button.nextElementSibling;
+            let count = parseInt(countSpan.textContent.replace('K', '000').replace('.', ''));
             
-            if (heart.classList.contains('fas')) {
-                heart.classList.remove('fas');
-                heart.classList.add('far');
-                heart.style.color = 'white';
-                // Decrease count logic here
+            if (icon.classList.contains('fas')) {
+                // Unlike
+                icon.classList.remove('fas', 'text-red-500');
+                icon.classList.add('far');
+                count -= 1;
             } else {
-                heart.classList.remove('far');
-                heart.classList.add('fas');
-                heart.style.color = '#ff0050';
-                // Increase count logic here
+                // Like
+                icon.classList.remove('far');
+                icon.classList.add('fas', 'text-red-500');
+                button.classList.add('like-animation');
+                count += 1;
+                
+                // Remove animation class after animation completes
+                setTimeout(() => {
+                    button.classList.remove('like-animation');
+                }, 300);
+            }
+            
+            // Update count display
+            if (count >= 1000) {
+                countSpan.textContent = (count / 1000).toFixed(1) + 'K';
+            } else {
+                countSpan.textContent = count.toString();
             }
         }
-
-        function openComments() {
-            document.getElementById('commentsModal').showModal();
-        }
-
-        function shareVideo() {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Check out this amazing video!',
-                    text: 'Found this cool video on VideoShare',
-                    url: window.location.href
-                });
-            } else {
-                // Fallback for browsers that don't support Web Share API
-                navigator.clipboard.writeText(window.location.href).then(() => {
-                    alert('Link copied to clipboard!');
-                });
-            }
-        }
-
-        function openDiscover() {
-            alert('Discover page coming soon!');
-        }
-
-        function openInbox() {
-            alert('Inbox feature coming soon!');
-        }
-
+        
         // Keyboard navigation
-        document.addEventListener('keydown', function(e) {
-            const container = document.getElementById('videoContainer');
-            const videoHeight = window.innerHeight;
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                const currentVideoElement = currentVideo;
+                const videoItems = document.querySelectorAll('.video-item');
+                let currentIndex = Array.from(videoItems).findIndex(item => 
+                    item.contains(currentVideoElement)
+                );
+                
+                if (e.key === 'ArrowDown' && currentIndex < videoItems.length - 1) {
+                    videoItems[currentIndex + 1].scrollIntoView({ behavior: 'smooth' });
+                } else if (e.key === 'ArrowUp' && currentIndex > 0) {
+                    videoItems[currentIndex - 1].scrollIntoView({ behavior: 'smooth' });
+                }
+            }
             
-            if (e.key === 'ArrowDown') {
+            // Space to play/pause
+            if (e.key === ' ') {
                 e.preventDefault();
-                container.scrollBy(0, videoHeight);
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                container.scrollBy(0, -videoHeight);
+                if (currentVideo) {
+                    if (currentVideo.paused) {
+                        currentVideo.play();
+                    } else {
+                        currentVideo.pause();
+                    }
+                }
             }
         });
-
-        // Auto-scroll to next video after some time (optional)
-        let autoScrollTimer;
         
-        function resetAutoScroll() {
-            clearTimeout(autoScrollTimer);
-            autoScrollTimer = setTimeout(() => {
-                const container = document.getElementById('videoContainer');
-                const videoHeight = window.innerHeight;
-                container.scrollBy(0, videoHeight);
-            }, 15000); // Auto-scroll after 15 seconds
-        }
-
-        document.getElementById('videoContainer').addEventListener('scroll', resetAutoScroll);
-        resetAutoScroll();
+        // Auto-play first video on load
+        window.addEventListener('load', () => {
+            if (videos.length > 0) {
+                videos[0].play().catch(e => console.log('Auto-play failed:', e));
+                currentVideo = videos[0];
+            }
+        });
     </script>
 </body>
 </html>
