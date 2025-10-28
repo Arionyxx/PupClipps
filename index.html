@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VideoFeed - Main Feed</title>
+    <title>VideoShare - Discover Amazing Videos</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,25 +11,24 @@
     <style>
         body {
             overflow-x: hidden;
-            background: #000;
         }
         
         .video-container {
             height: 100vh;
-            scroll-snap-align: start;
-            position: relative;
-        }
-        
-        .video-feed {
-            height: 100vh;
-            overflow-y: scroll;
             scroll-snap-type: y mandatory;
+            overflow-y: scroll;
             scrollbar-width: none;
             -ms-overflow-style: none;
         }
         
-        .video-feed::-webkit-scrollbar {
+        .video-container::-webkit-scrollbar {
             display: none;
+        }
+        
+        .video-item {
+            height: 100vh;
+            scroll-snap-align: start;
+            position: relative;
         }
         
         .video-overlay {
@@ -38,26 +37,24 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(transparent 60%, rgba(0,0,0,0.3));
-            pointer-events: none;
+            background: linear-gradient(transparent 60%, rgba(0,0,0,0.7));
+            z-index: 10;
         }
         
-        .video-controls {
+        .video-actions {
             position: absolute;
             right: 1rem;
-            bottom: 6rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            pointer-events: auto;
+            bottom: 8rem;
+            z-index: 20;
         }
         
         .video-info {
             position: absolute;
             left: 1rem;
-            bottom: 6rem;
+            bottom: 8rem;
             right: 5rem;
-            pointer-events: auto;
+            z-index: 20;
+            color: white;
         }
         
         .bottom-nav {
@@ -65,282 +62,307 @@
             bottom: 0;
             left: 0;
             right: 0;
-            z-index: 50;
-            background: rgba(0,0,0,0.8);
+            z-index: 30;
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
         }
         
-        .control-btn {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(10px);
-            border: none;
-            color: white;
+        .action-btn {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
         
-        .control-btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: scale(1.1);
-        }
-        
-        .like-btn.liked {
-            color: #ff0050;
-        }
-        
-        .video-placeholder {
+        .video-bg {
             width: 100%;
             height: 100%;
+            object-fit: cover;
             background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .mock-video {
+            width: 100%;
+            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 4rem;
             color: white;
-            font-size: 1.5rem;
-        }
-        
-        @media (max-width: 768px) {
-            .video-controls {
-                right: 0.5rem;
-                bottom: 5rem;
-            }
-            
-            .video-info {
-                left: 0.5rem;
-                right: 4rem;
-                bottom: 5rem;
-            }
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
     </style>
 </head>
 <body>
-    <!-- Main Video Feed -->
-    <main class="video-feed" id="videoFeed" role="main" aria-label="Video feed">
-        <!-- Video 1 -->
-        <article class="video-container" data-video-id="1">
-            <div class="video-placeholder">
-                <div class="text-center">
-                    <i class="fas fa-play text-6xl mb-4"></i>
-                    <p>Sample Video 1</p>
+    <main class="video-container" id="videoContainer">
+        <!-- Video Item 1 -->
+        <article class="video-item">
+            <div class="video-bg" style="background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);">
+                <div class="mock-video">
+                    <i class="fas fa-play-circle"></i>
                 </div>
             </div>
             <div class="video-overlay"></div>
             
-            <div class="video-info text-white">
-                <div class="flex items-center gap-3 mb-3">
+            <section class="video-info">
+                <div class="flex items-center mb-2">
                     <div class="avatar">
                         <div class="w-10 rounded-full">
-                            <img src="https://via.placeholder.com/40x40/ff6b6b/ffffff?text=U1" alt="User avatar" />
+                            <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">
+                                JD
+                            </div>
                         </div>
                     </div>
-                    <span class="font-semibold">@user1</span>
-                    <button class="btn btn-outline btn-sm text-white border-white hover:bg-white hover:text-black">
+                    <span class="ml-3 font-semibold">@johndoe</span>
+                    <button class="btn btn-outline btn-sm ml-3 text-white border-white hover:bg-white hover:text-black">
                         Follow
                     </button>
                 </div>
-                <p class="text-sm mb-2">Amazing sunset timelapse! 🌅 #sunset #nature #timelapse</p>
-                <div class="flex items-center gap-4 text-sm">
-                    <span><i class="fas fa-music mr-1"></i>Original Audio</span>
+                <p class="text-sm mb-2">Amazing sunset timelapse from my rooftop! 🌅 #sunset #timelapse #photography</p>
+                <div class="flex items-center text-xs opacity-80">
+                    <i class="fas fa-music mr-2"></i>
+                    <span>Original Audio - John Doe</span>
                 </div>
-            </div>
+            </section>
             
-            <div class="video-controls">
-                <button class="control-btn like-btn" onclick="toggleLike(this)" aria-label="Like video">
-                    <i class="fas fa-heart"></i>
+            <aside class="video-actions">
+                <button class="action-btn" onclick="toggleLike(this)">
+                    <i class="fas fa-heart text-2xl mb-1"></i>
+                    <span class="text-xs">1.2K</span>
                 </button>
-                <span class="text-white text-xs text-center">1.2K</span>
-                
-                <button class="control-btn" onclick="toggleComments()" aria-label="View comments">
-                    <i class="fas fa-comment"></i>
+                <button class="action-btn" onclick="openComments()">
+                    <i class="fas fa-comment text-2xl mb-1"></i>
+                    <span class="text-xs">89</span>
                 </button>
-                <span class="text-white text-xs text-center">89</span>
-                
-                <button class="control-btn" onclick="shareVideo()" aria-label="Share video">
-                    <i class="fas fa-share"></i>
+                <button class="action-btn" onclick="shareVideo()">
+                    <i class="fas fa-share text-2xl mb-1"></i>
+                    <span class="text-xs">Share</span>
                 </button>
-                <span class="text-white text-xs text-center">Share</span>
-            </div>
+                <button class="action-btn">
+                    <i class="fas fa-bookmark text-2xl mb-1"></i>
+                </button>
+            </aside>
         </article>
 
-        <!-- Video 2 -->
-        <article class="video-container" data-video-id="2">
-            <div class="video-placeholder" style="background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);">
-                <div class="text-center">
-                    <i class="fas fa-play text-6xl mb-4"></i>
-                    <p>Sample Video 2</p>
+        <!-- Video Item 2 -->
+        <article class="video-item">
+            <div class="video-bg" style="background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);">
+                <div class="mock-video">
+                    <i class="fas fa-play-circle"></i>
                 </div>
             </div>
             <div class="video-overlay"></div>
             
-            <div class="video-info text-white">
-                <div class="flex items-center gap-3 mb-3">
+            <section class="video-info">
+                <div class="flex items-center mb-2">
                     <div class="avatar">
                         <div class="w-10 rounded-full">
-                            <img src="https://via.placeholder.com/40x40/4ecdc4/ffffff?text=U2" alt="User avatar" />
+                            <div class="w-10 h-10 bg-secondary rounded-full flex items-center justify-center text-white font-bold">
+                                SA
+                            </div>
                         </div>
                     </div>
-                    <span class="font-semibold">@creator2</span>
-                    <button class="btn btn-outline btn-sm text-white border-white hover:bg-white hover:text-black">
+                    <span class="ml-3 font-semibold">@sarahartist</span>
+                    <button class="btn btn-outline btn-sm ml-3 text-white border-white hover:bg-white hover:text-black">
                         Follow
                     </button>
                 </div>
-                <p class="text-sm mb-2">Dancing to my favorite song! 💃 #dance #music #viral</p>
-                <div class="flex items-center gap-4 text-sm">
-                    <span><i class="fas fa-music mr-1"></i>Trending Song</span>
+                <p class="text-sm mb-2">Quick painting tutorial - How to paint clouds ☁️ #art #painting #tutorial #clouds</p>
+                <div class="flex items-center text-xs opacity-80">
+                    <i class="fas fa-music mr-2"></i>
+                    <span>Chill Beats - Lofi Hip Hop</span>
                 </div>
-            </div>
+            </section>
             
-            <div class="video-controls">
-                <button class="control-btn like-btn" onclick="toggleLike(this)" aria-label="Like video">
-                    <i class="fas fa-heart"></i>
+            <aside class="video-actions">
+                <button class="action-btn" onclick="toggleLike(this)">
+                    <i class="fas fa-heart text-2xl mb-1"></i>
+                    <span class="text-xs">3.4K</span>
                 </button>
-                <span class="text-white text-xs text-center">3.4K</span>
-                
-                <button class="control-btn" onclick="toggleComments()" aria-label="View comments">
-                    <i class="fas fa-comment"></i>
+                <button class="action-btn" onclick="openComments()">
+                    <i class="fas fa-comment text-2xl mb-1"></i>
+                    <span class="text-xs">156</span>
                 </button>
-                <span class="text-white text-xs text-center">156</span>
-                
-                <button class="control-btn" onclick="shareVideo()" aria-label="Share video">
-                    <i class="fas fa-share"></i>
+                <button class="action-btn" onclick="shareVideo()">
+                    <i class="fas fa-share text-2xl mb-1"></i>
+                    <span class="text-xs">Share</span>
                 </button>
-                <span class="text-white text-xs text-center">Share</span>
-            </div>
+                <button class="action-btn">
+                    <i class="fas fa-bookmark text-2xl mb-1"></i>
+                </button>
+            </aside>
         </article>
 
-        <!-- Video 3 -->
-        <article class="video-container" data-video-id="3">
-            <div class="video-placeholder" style="background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);">
-                <div class="text-center">
-                    <i class="fas fa-play text-6xl mb-4"></i>
-                    <p>Sample Video 3</p>
+        <!-- Video Item 3 -->
+        <article class="video-item">
+            <div class="video-bg" style="background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="mock-video">
+                    <i class="fas fa-play-circle"></i>
                 </div>
             </div>
             <div class="video-overlay"></div>
             
-            <div class="video-info text-white">
-                <div class="flex items-center gap-3 mb-3">
+            <section class="video-info">
+                <div class="flex items-center mb-2">
                     <div class="avatar">
                         <div class="w-10 rounded-full">
-                            <img src="https://via.placeholder.com/40x40/45b7d1/ffffff?text=U3" alt="User avatar" />
+                            <div class="w-10 h-10 bg-accent rounded-full flex items-center justify-center text-white font-bold">
+                                MC
+                            </div>
                         </div>
                     </div>
-                    <span class="font-semibold">@foodie3</span>
-                    <button class="btn btn-outline btn-sm text-white border-white hover:bg-white hover:text-black">
+                    <span class="ml-3 font-semibold">@mikechef</span>
+                    <button class="btn btn-outline btn-sm ml-3 text-white border-white hover:bg-white hover:text-black">
                         Follow
                     </button>
                 </div>
-                <p class="text-sm mb-2">Quick pasta recipe! 🍝 #cooking #food #recipe</p>
-                <div class="flex items-center gap-4 text-sm">
-                    <span><i class="fas fa-music mr-1"></i>Cooking Beats</span>
+                <p class="text-sm mb-2">30-second pasta recipe that will blow your mind! 🍝 #cooking #pasta #recipe #foodhack</p>
+                <div class="flex items-center text-xs opacity-80">
+                    <i class="fas fa-music mr-2"></i>
+                    <span>Upbeat Cooking Music</span>
                 </div>
-            </div>
+            </section>
             
-            <div class="video-controls">
-                <button class="control-btn like-btn" onclick="toggleLike(this)" aria-label="Like video">
-                    <i class="fas fa-heart"></i>
+            <aside class="video-actions">
+                <button class="action-btn" onclick="toggleLike(this)">
+                    <i class="fas fa-heart text-2xl mb-1"></i>
+                    <span class="text-xs">5.7K</span>
                 </button>
-                <span class="text-white text-xs text-center">892</span>
-                
-                <button class="control-btn" onclick="toggleComments()" aria-label="View comments">
-                    <i class="fas fa-comment"></i>
+                <button class="action-btn" onclick="openComments()">
+                    <i class="fas fa-comment text-2xl mb-1"></i>
+                    <span class="text-xs">234</span>
                 </button>
-                <span class="text-white text-xs text-center">45</span>
-                
-                <button class="control-btn" onclick="shareVideo()" aria-label="Share video">
-                    <i class="fas fa-share"></i>
+                <button class="action-btn" onclick="shareVideo()">
+                    <i class="fas fa-share text-2xl mb-1"></i>
+                    <span class="text-xs">Share</span>
                 </button>
-                <span class="text-white text-xs text-center">Share</span>
-            </div>
+                <button class="action-btn">
+                    <i class="fas fa-bookmark text-2xl mb-1"></i>
+                </button>
+            </aside>
         </article>
     </main>
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
-        <div class="navbar px-4 py-2">
-            <div class="navbar-start">
-                <a href="index.html" class="btn btn-ghost text-white">
-                    <i class="fas fa-home text-xl"></i>
-                </a>
-            </div>
-            <div class="navbar-center">
-                <a href="upload.html" class="btn btn-ghost text-white">
-                    <i class="fas fa-plus text-xl"></i>
-                </a>
-            </div>
-            <div class="navbar-end">
-                <a href="profile.html" class="btn btn-ghost text-white">
-                    <i class="fas fa-user text-xl"></i>
-                </a>
-            </div>
+        <div class="btm-nav">
+            <a href="index.html" class="active">
+                <i class="fas fa-home text-lg"></i>
+                <span class="btm-nav-label">Home</span>
+            </a>
+            <a href="#" onclick="openDiscover()">
+                <i class="fas fa-search text-lg"></i>
+                <span class="btm-nav-label">Discover</span>
+            </a>
+            <a href="upload.html" class="text-primary">
+                <i class="fas fa-plus-circle text-2xl"></i>
+            </a>
+            <a href="#" onclick="openInbox()">
+                <i class="fas fa-inbox text-lg"></i>
+                <span class="btm-nav-label">Inbox</span>
+            </a>
+            <a href="profile.html">
+                <i class="fas fa-user text-lg"></i>
+                <span class="btm-nav-label">Profile</span>
+            </a>
         </div>
     </nav>
 
     <!-- Comments Modal -->
-    <div class="modal" id="commentsModal">
-        <div class="modal-box">
+    <dialog id="commentsModal" class="modal">
+        <div class="modal-box w-11/12 max-w-2xl">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
             <h3 class="font-bold text-lg mb-4">Comments</h3>
-            <div class="space-y-4 max-h-96 overflow-y-auto">
-                <div class="flex gap-3">
+            
+            <div class="space-y-4 max-h-96 overflow-y-auto mb-4">
+                <div class="flex space-x-3">
                     <div class="avatar">
                         <div class="w-8 rounded-full">
-                            <img src="https://via.placeholder.com/32x32/96ceb4/ffffff?text=C1" alt="Commenter avatar" />
+                            <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-xs font-bold">
+                                AB
+                            </div>
                         </div>
                     </div>
-                    <div>
-                        <p class="font-semibold text-sm">@commenter1</p>
-                        <p class="text-sm">Amazing video! Love it! 😍</p>
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2">
+                            <span class="font-semibold text-sm">@alexbrown</span>
+                            <span class="text-xs opacity-60">2h</span>
+                        </div>
+                        <p class="text-sm">This is amazing! How did you get that perfect timing?</p>
+                        <div class="flex items-center space-x-4 mt-1">
+                            <button class="text-xs opacity-60 hover:opacity-100">Reply</button>
+                            <button class="text-xs opacity-60 hover:opacity-100">
+                                <i class="fas fa-heart mr-1"></i>12
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <div class="flex gap-3">
+                
+                <div class="flex space-x-3">
                     <div class="avatar">
                         <div class="w-8 rounded-full">
-                            <img src="https://via.placeholder.com/32x32/ffeaa7/ffffff?text=C2" alt="Commenter avatar" />
+                            <div class="w-8 h-8 bg-secondary rounded-full flex items-center justify-center text-white text-xs font-bold">
+                                LM
+                            </div>
                         </div>
                     </div>
-                    <div>
-                        <p class="font-semibold text-sm">@commenter2</p>
-                        <p class="text-sm">How did you make this?</p>
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2">
+                            <span class="font-semibold text-sm">@lisamiller</span>
+                            <span class="text-xs opacity-60">1h</span>
+                        </div>
+                        <p class="text-sm">Beautiful work! Following for more content like this 🔥</p>
+                        <div class="flex items-center space-x-4 mt-1">
+                            <button class="text-xs opacity-60 hover:opacity-100">Reply</button>
+                            <button class="text-xs opacity-60 hover:opacity-100">
+                                <i class="fas fa-heart mr-1"></i>8
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="modal-action">
-                <button class="btn" onclick="toggleComments()">Close</button>
+            
+            <div class="flex space-x-2">
+                <input type="text" placeholder="Add a comment..." class="input input-bordered flex-1" />
+                <button class="btn btn-primary">Post</button>
             </div>
         </div>
-    </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
 
     <script>
-        // Like functionality
         function toggleLike(button) {
-            button.classList.toggle('liked');
-            const icon = button.querySelector('i');
-            if (button.classList.contains('liked')) {
-                icon.classList.remove('far');
-                icon.classList.add('fas');
+            const heart = button.querySelector('i');
+            const count = button.querySelector('span');
+            
+            if (heart.classList.contains('fas')) {
+                heart.classList.remove('fas');
+                heart.classList.add('far');
+                heart.style.color = 'white';
+                // Decrease count logic here
             } else {
-                icon.classList.remove('fas');
-                icon.classList.add('far');
+                heart.classList.remove('far');
+                heart.classList.add('fas');
+                heart.style.color = '#ff0050';
+                // Increase count logic here
             }
         }
 
-        // Comments modal
-        function toggleComments() {
-            const modal = document.getElementById('commentsModal');
-            modal.classList.toggle('modal-open');
+        function openComments() {
+            document.getElementById('commentsModal').showModal();
         }
 
-        // Share functionality
         function shareVideo() {
             if (navigator.share) {
                 navigator.share({
-                    title: 'Check out this video!',
-                    text: 'Amazing video on VideoFeed',
+                    title: 'Check out this amazing video!',
+                    text: 'Found this cool video on VideoShare',
                     url: window.location.href
                 });
             } else {
@@ -351,50 +373,42 @@
             }
         }
 
-        // Smooth scrolling with snap
-        document.addEventListener('DOMContentLoaded', function() {
-            const videoFeed = document.getElementById('videoFeed');
-            let isScrolling = false;
+        function openDiscover() {
+            alert('Discover page coming soon!');
+        }
 
-            videoFeed.addEventListener('scroll', function() {
-                if (!isScrolling) {
-                    window.requestAnimationFrame(function() {
-                        // Add any scroll-based animations here
-                        isScrolling = false;
-                    });
-                    isScrolling = true;
-                }
-            });
+        function openInbox() {
+            alert('Inbox feature coming soon!');
+        }
 
-            // Keyboard navigation
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    const currentScroll = videoFeed.scrollTop;
-                    const windowHeight = window.innerHeight;
-                    videoFeed.scrollTo({
-                        top: currentScroll + windowHeight,
-                        behavior: 'smooth'
-                    });
-                } else if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    const currentScroll = videoFeed.scrollTop;
-                    const windowHeight = window.innerHeight;
-                    videoFeed.scrollTo({
-                        top: currentScroll - windowHeight,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
-
-        // Close modal when clicking outside
-        document.addEventListener('click', function(e) {
-            const modal = document.getElementById('commentsModal');
-            if (e.target === modal) {
-                modal.classList.remove('modal-open');
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            const container = document.getElementById('videoContainer');
+            const videoHeight = window.innerHeight;
+            
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                container.scrollBy(0, videoHeight);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                container.scrollBy(0, -videoHeight);
             }
         });
+
+        // Auto-scroll to next video after some time (optional)
+        let autoScrollTimer;
+        
+        function resetAutoScroll() {
+            clearTimeout(autoScrollTimer);
+            autoScrollTimer = setTimeout(() => {
+                const container = document.getElementById('videoContainer');
+                const videoHeight = window.innerHeight;
+                container.scrollBy(0, videoHeight);
+            }, 15000); // Auto-scroll after 15 seconds
+        }
+
+        document.getElementById('videoContainer').addEventListener('scroll', resetAutoScroll);
+        resetAutoScroll();
     </script>
 </body>
 </html>
