@@ -3,400 +3,716 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VideoFeed - Discover Amazing Videos</title>
+    <title>VideoFeed - Share Your Moments</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        body {
-            overflow-x: hidden;
-        }
-        
+        /* Custom styles for video feed */
         .video-container {
             scroll-snap-type: y mandatory;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-        
-        .video-container::-webkit-scrollbar {
-            display: none;
+            overflow-y: scroll;
+            height: 100vh;
         }
         
         .video-item {
             scroll-snap-align: start;
+            height: 100vh;
+            position: relative;
         }
         
         .video-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
             background: linear-gradient(transparent, rgba(0,0,0,0.7));
-        }
-        
-        .floating-nav {
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.9);
-        }
-        
-        @media (max-width: 768px) {
-            .video-item {
-                height: 100vh;
-            }
-        }
-        
-        .like-animation {
-            animation: likeScale 0.3s ease-in-out;
-        }
-        
-        @keyframes likeScale {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
+            padding: 2rem 1rem 1rem;
+            color: white;
         }
         
         .video-actions {
+            position: absolute;
             right: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
+            bottom: 8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .action-btn {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: none;
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .upload-area {
+            border: 2px dashed #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            border-color: #3b82f6;
+            background-color: #f8fafc;
+        }
+        
+        .upload-area.dragover {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .stats-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        /* Hide scrollbar but keep functionality */
+        .video-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .video-container {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Video styling */
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 0.5rem;
+        }
+        
+        .video-thumbnail {
+            aspect-ratio: 9/16;
+            background: #f3f4f6;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .video-thumbnail:hover {
+            transform: scale(1.05);
         }
     </style>
 </head>
 <body class="bg-base-100">
-    <!-- Navigation -->
-    <nav class="navbar floating-nav fixed top-0 z-50 px-4">
-        <div class="navbar-start">
-            <h1 class="text-2xl font-bold text-primary">VideoFeed</h1>
-        </div>
-        <div class="navbar-center hidden lg:flex">
-            <ul class="menu menu-horizontal px-1">
-                <li><a href="#" class="btn btn-ghost">For You</a></li>
-                <li><a href="#" class="btn btn-ghost">Following</a></li>
-                <li><a href="#" class="btn btn-ghost">Live</a></li>
-            </ul>
-        </div>
-        <div class="navbar-end">
-            <button class="btn btn-ghost btn-circle" aria-label="Search">
-                <i class="fas fa-search text-lg"></i>
-            </button>
-            <a href="upload.html" class="btn btn-primary btn-sm ml-2">
-                <i class="fas fa-plus mr-1"></i>Upload
-            </a>
-            <a href="profile.html" class="btn btn-ghost btn-circle ml-2" aria-label="Profile">
-                <div class="avatar">
-                    <div class="w-8 rounded-full">
-                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=face" alt="User avatar" />
-                    </div>
-                </div>
-            </a>
-        </div>
-    </nav>
-
-    <!-- Video Feed Container -->
-    <main class="video-container h-screen overflow-y-scroll pt-16 lg:pt-0">
-        <!-- Video Item 1 -->
-        <article class="video-item relative h-screen lg:h-[80vh] bg-black flex items-center justify-center">
-            <video 
-                class="w-full h-full object-cover" 
-                loop 
-                muted 
-                playsinline
-                data-video-id="1"
-                poster="https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=600&fit=crop"
-            >
-                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-            
-            <!-- Video Overlay -->
-            <div class="video-overlay absolute inset-0 pointer-events-none"></div>
-            
-            <!-- Video Info -->
-            <div class="absolute bottom-4 left-4 text-white z-10 max-w-xs lg:max-w-md">
-                <div class="flex items-center mb-2">
-                    <div class="avatar">
-                        <div class="w-10 rounded-full ring ring-white ring-offset-2">
-                            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face" alt="Creator avatar" />
+    <!-- Main Video Feed Page -->
+    <main id="feed-page" class="page active">
+        <div class="video-container" id="videoContainer">
+            <!-- Video Item 1 -->
+            <article class="video-item">
+                <video 
+                    src="https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4" 
+                    loop 
+                    muted 
+                    playsinline
+                    aria-label="Sample video content"
+                ></video>
+                
+                <div class="video-overlay">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="avatar">
+                            <div class="w-10 rounded-full">
+                                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=face" alt="User avatar" />
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="font-bold">@johndoe</h3>
+                            <button class="btn btn-outline btn-sm text-white border-white hover:bg-white hover:text-black">Follow</button>
                         </div>
                     </div>
-                    <div class="ml-3">
-                        <h3 class="font-semibold">@sarah_creates</h3>
-                        <button class="btn btn-primary btn-xs mt-1">Follow</button>
+                    <p class="text-sm mb-2">Amazing sunset view from my balcony! 🌅 #sunset #nature #beautiful</p>
+                    <div class="flex items-center gap-4 text-sm">
+                        <span><i class="fas fa-music mr-1"></i>Original Audio</span>
                     </div>
                 </div>
-                <p class="text-sm mb-2">Amazing sunset timelapse from my rooftop! 🌅 #sunset #timelapse #photography</p>
-                <div class="flex items-center text-xs opacity-75">
-                    <i class="fas fa-music mr-1"></i>
-                    <span>Original Sound - sarah_creates</span>
+                
+                <div class="video-actions">
+                    <button class="action-btn like-btn" aria-label="Like video">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    <span class="text-white text-xs text-center">1.2K</span>
+                    
+                    <button class="action-btn comment-btn" aria-label="Comment on video">
+                        <i class="fas fa-comment"></i>
+                    </button>
+                    <span class="text-white text-xs text-center">89</span>
+                    
+                    <button class="action-btn share-btn" aria-label="Share video">
+                        <i class="fas fa-share"></i>
+                    </button>
+                    <span class="text-white text-xs text-center">45</span>
                 </div>
-            </div>
+            </article>
             
-            <!-- Video Actions -->
-            <div class="video-actions absolute flex flex-col items-center space-y-4 z-10">
-                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" onclick="toggleLike(this)" aria-label="Like video">
-                    <i class="fas fa-heart text-2xl"></i>
-                </button>
-                <span class="text-white text-sm font-semibold">1.2K</span>
+            <!-- Video Item 2 -->
+            <article class="video-item">
+                <video 
+                    src="https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_2mb.mp4" 
+                    loop 
+                    muted 
+                    playsinline
+                    aria-label="Sample video content"
+                ></video>
                 
-                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" aria-label="Comment">
-                    <i class="fas fa-comment text-2xl"></i>
-                </button>
-                <span class="text-white text-sm font-semibold">89</span>
-                
-                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" aria-label="Share">
-                    <i class="fas fa-share text-2xl"></i>
-                </button>
-                <span class="text-white text-sm font-semibold">24</span>
-                
-                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" aria-label="More options">
-                    <i class="fas fa-ellipsis-v text-2xl"></i>
-                </button>
-            </div>
-        </article>
-
-        <!-- Video Item 2 -->
-        <article class="video-item relative h-screen lg:h-[80vh] bg-black flex items-center justify-center">
-            <video 
-                class="w-full h-full object-cover" 
-                loop 
-                muted 
-                playsinline
-                data-video-id="2"
-                poster="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=600&fit=crop"
-            >
-                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-            
-            <div class="video-overlay absolute inset-0 pointer-events-none"></div>
-            
-            <div class="absolute bottom-4 left-4 text-white z-10 max-w-xs lg:max-w-md">
-                <div class="flex items-center mb-2">
-                    <div class="avatar">
-                        <div class="w-10 rounded-full ring ring-white ring-offset-2">
-                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" alt="Creator avatar" />
+                <div class="video-overlay">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="avatar">
+                            <div class="w-10 rounded-full">
+                                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face" alt="User avatar" />
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="font-bold">@sarahsmith</h3>
+                            <button class="btn btn-outline btn-sm text-white border-white hover:bg-white hover:text-black">Follow</button>
                         </div>
                     </div>
-                    <div class="ml-3">
-                        <h3 class="font-semibold">@mike_adventures</h3>
-                        <button class="btn btn-primary btn-xs mt-1">Follow</button>
+                    <p class="text-sm mb-2">Quick workout routine for busy days! 💪 #fitness #workout #health</p>
+                    <div class="flex items-center gap-4 text-sm">
+                        <span><i class="fas fa-music mr-1"></i>Workout Beats</span>
                     </div>
                 </div>
-                <p class="text-sm mb-2">Epic mountain hiking adventure! The view was absolutely breathtaking 🏔️ #hiking #adventure #nature</p>
-                <div class="flex items-center text-xs opacity-75">
-                    <i class="fas fa-music mr-1"></i>
-                    <span>Adventure Vibes - Mike</span>
+                
+                <div class="video-actions">
+                    <button class="action-btn like-btn" aria-label="Like video">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    <span class="text-white text-xs text-center">2.5K</span>
+                    
+                    <button class="action-btn comment-btn" aria-label="Comment on video">
+                        <i class="fas fa-comment"></i>
+                    </button>
+                    <span class="text-white text-xs text-center">156</span>
+                    
+                    <button class="action-btn share-btn" aria-label="Share video">
+                        <i class="fas fa-share"></i>
+                    </button>
+                    <span class="text-white text-xs text-center">78</span>
                 </div>
-            </div>
+            </article>
             
-            <div class="video-actions absolute flex flex-col items-center space-y-4 z-10">
-                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" onclick="toggleLike(this)" aria-label="Like video">
-                    <i class="fas fa-heart text-2xl"></i>
-                </button>
-                <span class="text-white text-sm font-semibold">3.4K</span>
+            <!-- Video Item 3 -->
+            <article class="video-item">
+                <div class="w-full h-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center">
+                    <div class="text-center text-white">
+                        <i class="fas fa-play-circle text-6xl mb-4"></i>
+                        <p class="text-lg">Sample Video Placeholder</p>
+                    </div>
+                </div>
                 
-                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" aria-label="Comment">
-                    <i class="fas fa-comment text-2xl"></i>
-                </button>
-                <span class="text-white text-sm font-semibold">156</span>
-                
-                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" aria-label="Share">
-                    <i class="fas fa-share text-2xl"></i>
-                </button>
-                <span class="text-white text-sm font-semibold">67</span>
-                
-                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" aria-label="More options">
-                    <i class="fas fa-ellipsis-v text-2xl"></i>
-                </button>
-            </div>
-        </article>
-
-        <!-- Video Item 3 -->
-        <article class="video-item relative h-screen lg:h-[80vh] bg-black flex items-center justify-center">
-            <video 
-                class="w-full h-full object-cover" 
-                loop 
-                muted 
-                playsinline
-                data-video-id="3"
-                poster="https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=400&h=600&fit=crop"
-            >
-                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-            
-            <div class="video-overlay absolute inset-0 pointer-events-none"></div>
-            
-            <div class="absolute bottom-4 left-4 text-white z-10 max-w-xs lg:max-w-md">
-                <div class="flex items-center mb-2">
-                    <div class="avatar">
-                        <div class="w-10 rounded-full ring ring-white ring-offset-2">
-                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face" alt="Creator avatar" />
+                <div class="video-overlay">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="avatar">
+                            <div class="w-10 rounded-full">
+                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" alt="User avatar" />
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="font-bold">@mikejohnson</h3>
+                            <button class="btn btn-outline btn-sm text-white border-white hover:bg-white hover:text-black">Follow</button>
                         </div>
                     </div>
-                    <div class="ml-3">
-                        <h3 class="font-semibold">@emma_dances</h3>
-                        <button class="btn btn-primary btn-xs mt-1">Follow</button>
+                    <p class="text-sm mb-2">Cooking the perfect pasta! 🍝 Recipe in comments #cooking #food #pasta</p>
+                    <div class="flex items-center gap-4 text-sm">
+                        <span><i class="fas fa-music mr-1"></i>Kitchen Vibes</span>
                     </div>
                 </div>
-                <p class="text-sm mb-2">New dance routine! Took me weeks to perfect this 💃 #dance #choreography #trending</p>
-                <div class="flex items-center text-xs opacity-75">
-                    <i class="fas fa-music mr-1"></i>
-                    <span>Trending Beat 2024</span>
+                
+                <div class="video-actions">
+                    <button class="action-btn like-btn" aria-label="Like video">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    <span class="text-white text-xs text-center">892</span>
+                    
+                    <button class="action-btn comment-btn" aria-label="Comment on video">
+                        <i class="fas fa-comment"></i>
+                    </button>
+                    <span class="text-white text-xs text-center">67</span>
+                    
+                    <button class="action-btn share-btn" aria-label="Share video">
+                        <i class="fas fa-share"></i>
+                    </button>
+                    <span class="text-white text-xs text-center">23</span>
                 </div>
-            </div>
-            
-            <div class="video-actions absolute flex flex-col items-center space-y-4 z-10">
-                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" onclick="toggleLike(this)" aria-label="Like video">
-                    <i class="fas fa-heart text-2xl"></i>
-                </button>
-                <span class="text-white text-sm font-semibold">5.7K</span>
-                
-                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" aria-label="Comment">
-                    <i class="fas fa-comment text-2xl"></i>
-                </button>
-                <span class="text-white text-sm font-semibold">234</span>
-                
-                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" aria-label="Share">
-                    <i class="fas fa-share text-2xl"></i>
-                </button>
-                <span class="text-white text-sm font-semibold">89</span>
-                
-                <button class="btn btn-circle btn-ghost text-white hover:bg-white/20" aria-label="More options">
-                    <i class="fas fa-ellipsis-v text-2xl"></i>
-                </button>
-            </div>
-        </article>
+            </article>
+        </div>
     </main>
 
-    <!-- Bottom Navigation (Mobile) -->
-    <nav class="btm-nav lg:hidden z-50">
-        <button class="active">
-            <i class="fas fa-home text-lg"></i>
-            <span class="btm-nav-label">Home</span>
-        </button>
-        <button>
-            <i class="fas fa-compass text-lg"></i>
-            <span class="btm-nav-label">Discover</span>
-        </button>
-        <a href="upload.html">
-            <i class="fas fa-plus text-lg"></i>
-            <span class="btm-nav-label">Create</span>
-        </a>
-        <button>
-            <i class="fas fa-heart text-lg"></i>
-            <span class="btm-nav-label">Inbox</span>
-        </button>
-        <a href="profile.html">
-            <i class="fas fa-user text-lg"></i>
-            <span class="btm-nav-label">Profile</span>
-        </a>
+    <!-- Upload Page -->
+    <main id="upload-page" class="page">
+        <div class="container mx-auto px-4 py-8 max-w-2xl">
+            <header class="text-center mb-8">
+                <h1 class="text-3xl font-bold mb-2">Upload Video</h1>
+                <p class="text-base-content/70">Share your moment with the world</p>
+            </header>
+            
+            <form id="uploadForm" class="space-y-6">
+                <section class="upload-area" id="uploadArea">
+                    <input type="file" id="videoInput" accept="video/*" class="hidden" aria-label="Select video file">
+                    <div id="uploadContent">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-base-content/50 mb-4"></i>
+                        <h3 class="text-lg font-semibold mb-2">Drop your video here</h3>
+                        <p class="text-base-content/70 mb-4">or click to browse</p>
+                        <button type="button" class="btn btn-primary" onclick="document.getElementById('videoInput').click()">
+                            Select Video
+                        </button>
+                    </div>
+                    <div id="videoPreview" class="hidden">
+                        <video id="previewVideo" class="w-full max-w-sm mx-auto rounded-lg mb-4" controls></video>
+                        <p class="text-sm text-base-content/70" id="fileName"></p>
+                    </div>
+                </section>
+                
+                <div class="form-control">
+                    <label class="label" for="videoTitle">
+                        <span class="label-text font-semibold">Title</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="videoTitle"
+                        placeholder="Give your video a catchy title..." 
+                        class="input input-bordered w-full" 
+                        maxlength="100"
+                        required
+                    />
+                </div>
+                
+                <div class="form-control">
+                    <label class="label" for="videoDescription">
+                        <span class="label-text font-semibold">Description</span>
+                    </label>
+                    <textarea 
+                        id="videoDescription"
+                        class="textarea textarea-bordered h-24" 
+                        placeholder="Tell us about your video... #hashtags"
+                        maxlength="500"
+                    ></textarea>
+                </div>
+                
+                <div class="form-control">
+                    <label class="label" for="videoCategory">
+                        <span class="label-text font-semibold">Category</span>
+                    </label>
+                    <select id="videoCategory" class="select select-bordered w-full">
+                        <option disabled selected>Choose a category</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="education">Education</option>
+                        <option value="music">Music</option>
+                        <option value="sports">Sports</option>
+                        <option value="food">Food</option>
+                        <option value="travel">Travel</option>
+                        <option value="lifestyle">Lifestyle</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-control">
+                    <label class="cursor-pointer label justify-start gap-3">
+                        <input type="checkbox" id="allowComments" class="checkbox checkbox-primary" checked />
+                        <span class="label-text">Allow comments</span>
+                    </label>
+                </div>
+                
+                <div class="form-control">
+                    <label class="cursor-pointer label justify-start gap-3">
+                        <input type="checkbox" id="allowDownloads" class="checkbox checkbox-primary" />
+                        <span class="label-text">Allow downloads</span>
+                    </label>
+                </div>
+                
+                <div class="flex gap-4 pt-4">
+                    <button type="button" class="btn btn-outline flex-1" onclick="resetForm()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary flex-1" id="uploadBtn" disabled>
+                        <span class="loading loading-spinner loading-sm hidden" id="uploadSpinner"></span>
+                        Upload Video
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Profile Page -->
+    <main id="profile-page" class="page">
+        <div class="min-h-screen">
+            <header class="profile-header text-white">
+                <div class="container mx-auto px-4 py-8">
+                    <div class="flex flex-col items-center text-center">
+                        <div class="avatar mb-4">
+                            <div class="w-24 rounded-full ring ring-white ring-offset-2">
+                                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop&crop=face" alt="Profile picture" />
+                            </div>
+                        </div>
+                        <h1 class="text-2xl font-bold mb-2">John Doe</h1>
+                        <p class="text-lg opacity-90 mb-1">@johndoe</p>
+                        <p class="opacity-75 mb-4 max-w-md">Content creator | Travel enthusiast | Sharing life's beautiful moments ✨</p>
+                        
+                        <div class="flex gap-4 mb-6">
+                            <div class="stats-card rounded-lg px-4 py-2 text-center">
+                                <div class="text-xl font-bold">127</div>
+                                <div class="text-sm opacity-75">Videos</div>
+                            </div>
+                            <div class="stats-card rounded-lg px-4 py-2 text-center">
+                                <div class="text-xl font-bold">12.5K</div>
+                                <div class="text-sm opacity-75">Followers</div>
+                            </div>
+                            <div class="stats-card rounded-lg px-4 py-2 text-center">
+                                <div class="text-xl font-bold">892</div>
+                                <div class="text-sm opacity-75">Following</div>
+                            </div>
+                            <div class="stats-card rounded-lg px-4 py-2 text-center">
+                                <div class="text-xl font-bold">1.2M</div>
+                                <div class="text-sm opacity-75">Likes</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-3">
+                            <button class="btn btn-outline text-white border-white hover:bg-white hover:text-purple-600">
+                                Edit Profile
+                            </button>
+                            <button class="btn btn-outline text-white border-white hover:bg-white hover:text-purple-600">
+                                Share Profile
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <section class="container mx-auto px-4 py-8">
+                <div class="tabs tabs-boxed mb-6 justify-center">
+                    <button class="tab tab-active" onclick="showProfileTab('videos')">
+                        <i class="fas fa-video mr-2"></i>Videos
+                    </button>
+                    <button class="tab" onclick="showProfileTab('liked')">
+                        <i class="fas fa-heart mr-2"></i>Liked
+                    </button>
+                    <button class="tab" onclick="showProfileTab('saved')">
+                        <i class="fas fa-bookmark mr-2"></i>Saved
+                    </button>
+                </div>
+                
+                <div id="videos-tab" class="profile-tab">
+                    <div class="video-grid">
+                        <!-- Sample video thumbnails -->
+                        <div class="video-thumbnail bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                            <i class="fas fa-play text-white text-2xl"></i>
+                        </div>
+                        <div class="video-thumbnail bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center">
+                            <i class="fas fa-play text-white text-2xl"></i>
+                        </div>
+                        <div class="video-thumbnail bg-gradient-to-br from-pink-400 to-red-500 flex items-center justify-center">
+                            <i class="fas fa-play text-white text-2xl"></i>
+                        </div>
+                        <div class="video-thumbnail bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
+                            <i class="fas fa-play text-white text-2xl"></i>
+                        </div>
+                        <div class="video-thumbnail bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center">
+                            <i class="fas fa-play text-white text-2xl"></i>
+                        </div>
+                        <div class="video-thumbnail bg-gradient-to-br from-teal-400 to-green-500 flex items-center justify-center">
+                            <i class="fas fa-play text-white text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="liked-tab" class="profile-tab hidden">
+                    <div class="text-center py-12">
+                        <i class="fas fa-heart text-4xl text-base-content/30 mb-4"></i>
+                        <h3 class="text-lg font-semibold mb-2">No liked videos yet</h3>
+                        <p class="text-base-content/70">Videos you like will appear here</p>
+                    </div>
+                </div>
+                
+                <div id="saved-tab" class="profile-tab hidden">
+                    <div class="text-center py-12">
+                        <i class="fas fa-bookmark text-4xl text-base-content/30 mb-4"></i>
+                        <h3 class="text-lg font-semibold mb-2">No saved videos yet</h3>
+                        <p class="text-base-content/70">Videos you save will appear here</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+        <div class="flex justify-around items-center py-2">
+            <button class="nav-btn flex flex-col items-center p-2 text-primary" data-page="feed-page" aria-label="Home feed">
+                <i class="fas fa-home text-xl mb-1"></i>
+                <span class="text-xs">Home</span>
+            </button>
+            <button class="nav-btn flex flex-col items-center p-2 text-base-content/60" data-page="discover-page" aria-label="Discover">
+                <i class="fas fa-search text-xl mb-1"></i>
+                <span class="text-xs">Discover</span>
+            </button>
+            <button class="nav-btn flex flex-col items-center p-2 text-base-content/60" data-page="upload-page" aria-label="Upload video">
+                <div class="bg-primary text-primary-content rounded-lg p-2">
+                    <i class="fas fa-plus text-xl"></i>
+                </div>
+            </button>
+            <button class="nav-btn flex flex-col items-center p-2 text-base-content/60" data-page="inbox-page" aria-label="Messages">
+                <i class="fas fa-comment-dots text-xl mb-1"></i>
+                <span class="text-xs">Inbox</span>
+            </button>
+            <button class="nav-btn flex flex-col items-center p-2 text-base-content/60" data-page="profile-page" aria-label="Profile">
+                <i class="fas fa-user text-xl mb-1"></i>
+                <span class="text-xs">Profile</span>
+            </button>
+        </div>
     </nav>
 
     <script>
-        // Video playback management
-        let currentVideo = null;
-        const videos = document.querySelectorAll('video');
-        const videoContainer = document.querySelector('.video-container');
+        // Navigation functionality
+        const navButtons = document.querySelectorAll('.nav-btn');
+        const pages = document.querySelectorAll('.page');
         
-        // Intersection Observer for video playback
-        const videoObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                const video = entry.target;
-                if (entry.isIntersecting) {
-                    if (currentVideo && currentVideo !== video) {
-                        currentVideo.pause();
-                    }
-                    video.play().catch(e => console.log('Video play failed:', e));
-                    currentVideo = video;
-                } else {
-                    video.pause();
-                }
-            });
-        }, {
-            threshold: 0.5
-        });
-        
-        // Observe all videos
-        videos.forEach(video => {
-            videoObserver.observe(video);
-            
-            // Click to play/pause
-            video.addEventListener('click', () => {
-                if (video.paused) {
-                    video.play();
-                } else {
-                    video.pause();
-                }
-            });
-        });
-        
-        // Like functionality
-        function toggleLike(button) {
-            const icon = button.querySelector('i');
-            const countSpan = button.nextElementSibling;
-            let count = parseInt(countSpan.textContent.replace('K', '000').replace('.', ''));
-            
-            if (icon.classList.contains('fas')) {
-                // Unlike
-                icon.classList.remove('fas', 'text-red-500');
-                icon.classList.add('far');
-                count -= 1;
-            } else {
-                // Like
-                icon.classList.remove('far');
-                icon.classList.add('fas', 'text-red-500');
-                button.classList.add('like-animation');
-                count += 1;
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetPage = button.getAttribute('data-page');
                 
-                // Remove animation class after animation completes
-                setTimeout(() => {
-                    button.classList.remove('like-animation');
-                }, 300);
-            }
-            
-            // Update count display
-            if (count >= 1000) {
-                countSpan.textContent = (count / 1000).toFixed(1) + 'K';
-            } else {
-                countSpan.textContent = count.toString();
-            }
+                // Hide all pages
+                pages.forEach(page => {
+                    page.classList.remove('active');
+                });
+                
+                // Show target page
+                const targetElement = document.getElementById(targetPage);
+                if (targetElement) {
+                    targetElement.classList.add('active');
+                }
+                
+                // Update active nav button
+                navButtons.forEach(btn => {
+                    btn.classList.remove('text-primary');
+                    btn.classList.add('text-base-content/60');
+                });
+                button.classList.add('text-primary');
+                button.classList.remove('text-base-content/60');
+                
+                // Handle video playback
+                if (targetPage === 'feed-page') {
+                    handleVideoPlayback();
+                } else {
+                    pauseAllVideos();
+                }
+            });
+        });
+        
+        // Video playback functionality
+        let currentVideoIndex = 0;
+        const videos = document.querySelectorAll('video');
+        const videoContainer = document.getElementById('videoContainer');
+        
+        function handleVideoPlayback() {
+            videos.forEach((video, index) => {
+                if (index === currentVideoIndex) {
+                    video.play().catch(e => console.log('Video play failed:', e));
+                } else {
+                    video.pause();
+                }
+            });
         }
         
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-                e.preventDefault();
-                const currentVideoElement = currentVideo;
-                const videoItems = document.querySelectorAll('.video-item');
-                let currentIndex = Array.from(videoItems).findIndex(item => 
-                    item.contains(currentVideoElement)
-                );
-                
-                if (e.key === 'ArrowDown' && currentIndex < videoItems.length - 1) {
-                    videoItems[currentIndex + 1].scrollIntoView({ behavior: 'smooth' });
-                } else if (e.key === 'ArrowUp' && currentIndex > 0) {
-                    videoItems[currentIndex - 1].scrollIntoView({ behavior: 'smooth' });
-                }
-            }
-            
-            // Space to play/pause
-            if (e.key === ' ') {
-                e.preventDefault();
-                if (currentVideo) {
-                    if (currentVideo.paused) {
-                        currentVideo.play();
-                    } else {
-                        currentVideo.pause();
+        function pauseAllVideos() {
+            videos.forEach(video => video.pause());
+        }
+        
+        // Scroll handling for video feed
+        let isScrolling = false;
+        
+        videoContainer.addEventListener('scroll', () => {
+            if (!isScrolling) {
+                isScrolling = true;
+                setTimeout(() => {
+                    const containerHeight = videoContainer.clientHeight;
+                    const scrollTop = videoContainer.scrollTop;
+                    const newIndex = Math.round(scrollTop / containerHeight);
+                    
+                    if (newIndex !== currentVideoIndex && newIndex < videos.length) {
+                        currentVideoIndex = newIndex;
+                        handleVideoPlayback();
                     }
-                }
+                    isScrolling = false;
+                }, 100);
             }
         });
         
-        // Auto-play first video on load
-        window.addEventListener('load', () => {
-            if (videos.length > 0) {
-                videos[0].play().catch(e => console.log('Auto-play failed:', e));
-                currentVideo = videos[0];
+        // Initialize first video
+        if (videos.length > 0) {
+            setTimeout(() => {
+                videos[0].play().catch(e => console.log('Initial video play failed:', e));
+            }, 500);
+        }
+        
+        // Like button functionality
+        document.querySelectorAll('.like-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.classList.toggle('text-red-500');
+                const icon = this.querySelector('i');
+                if (this.classList.contains('text-red-500')) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                }
+            });
+        });
+        
+        // Upload functionality
+        const uploadArea = document.getElementById('uploadArea');
+        const videoInput = document.getElementById('videoInput');
+        const uploadContent = document.getElementById('uploadContent');
+        const videoPreview = document.getElementById('videoPreview');
+        const previewVideo = document.getElementById('previewVideo');
+        const fileName = document.getElementById('fileName');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const uploadForm = document.getElementById('uploadForm');
+        
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type.startsWith('video/')) {
+                handleVideoFile(files[0]);
             }
         });
-    </script>
-</body>
-</html>
+        
+        uploadArea.addEventListener('click', () => {
+            videoInput.click();
+        });
+        
+        videoInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleVideoFile(e.target.files[0]);
+            }
+        });
+        
+        function handleVideoFile(file) {
+            const url = URL.createObjectURL(file);
+            previewVideo.src = url;
+            fileName.textContent = file.name;
+            
+            uploadContent.classList.add('hidden');
+            videoPreview.classList.remove('hidden');
+            uploadBtn.disabled = false;
+        }
+        
+        // Form submission
+        uploadForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const uploadSpinner = document.getElementById('uploadSpinner');
+            const uploadBtnText = uploadBtn.childNodes[2];
+            
+            uploadBtn.disabled = true;
+            uploadSpinner.classList.remove('hidden');
+            uploadBtnText.textContent = 'Uploading...';
+            
+            // Simulate upload process
+            setTimeout(() => {
+                alert('Video uploaded successfully!');
+                resetForm();
+                uploadSpinner.classList.add('hidden');
+                uploadBtnText.textContent = 'Upload Video';
+            }, 3000);
+        });
+        
+        function resetForm() {
+            uploadForm.reset();
+            uploadContent.classList.remove('hidden');
+            videoPreview.classList.add('hidden');
+            uploadBtn.disabled = true;
+            previewVideo.src = '';
+            videoInput.value = '';
+        }
+        
+        // Profile tab functionality
+        function showProfileTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('tab-active');
+            });
+            event.target.classList.add('tab-active');
+            
+            // Show/hide tab content
+            document.querySelectorAll('.profile-tab').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            document.getElementById(tabName + '-tab').classList.remove('hidden');
+        }
+        
+        // Theme toggle (optional)
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+        
+        // Load saved theme
+        const
